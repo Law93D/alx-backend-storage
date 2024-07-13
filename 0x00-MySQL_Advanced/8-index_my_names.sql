@@ -3,4 +3,4 @@
 DROP INDEX IF EXISTS idx_name_first ON names;
 
 CREATE INDEX idx_name_first
-	ON names (LEFT(name, 1));
+ON names (LEFT(name, 1));
