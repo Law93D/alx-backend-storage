@@ -9,7 +9,9 @@ CREATE PROCEDURE AddBonus (
     IN p_project_name VARCHAR(255),
     IN p_score INT
 )
-BEGIN DECLARE v_project_id INT;
+BEGIN
+	DECLARE v_project_id INT;
+
 	SELECT id INTO v_project_id FROM projects WHERE name = p_project_name;
 	IF v_project_id IS NULL THEN
         INSERT INTO projects (name) VALUES (p_project_name);
@@ -25,4 +27,5 @@ BEGIN DECLARE v_project_id INT;
     )
     WHERE u.id = p_user_id;
     
-END$$ DELIMITER ;
+END$$
+DELIMITER ;
