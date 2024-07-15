@@ -1,0 +1,25 @@
+2024-07-15T18:20:59.616+0200 I  CONTROL  [main] Automatically disabling TLS 1.0, to force-enable TLS 1.0 specify --sslDisabledProtocols 'none'
+2024-07-15T18:20:59.622+0200 W  ASIO     [main] No TransportLayer configured during NetworkInterface startup
+2024-07-15T18:20:59.623+0200 I  CONTROL  [initandlisten] MongoDB starting : pid=6793 port=27017 dbpath=/data/db 64-bit host=Lawden
+2024-07-15T18:20:59.623+0200 I  CONTROL  [initandlisten] db version v4.2.25
+2024-07-15T18:20:59.623+0200 I  CONTROL  [initandlisten] git version: 41b59c2bfb5121e66f18cc3ef40055a1b5fb6c2e
+2024-07-15T18:20:59.623+0200 I  CONTROL  [initandlisten] OpenSSL version: OpenSSL 1.1.1  11 Sep 2018
+2024-07-15T18:20:59.623+0200 I  CONTROL  [initandlisten] allocator: tcmalloc
+2024-07-15T18:20:59.623+0200 I  CONTROL  [initandlisten] modules: none
+2024-07-15T18:20:59.623+0200 I  CONTROL  [initandlisten] build environment:
+2024-07-15T18:20:59.623+0200 I  CONTROL  [initandlisten]     distmod: ubuntu1804
+2024-07-15T18:20:59.623+0200 I  CONTROL  [initandlisten]     distarch: x86_64
+2024-07-15T18:20:59.623+0200 I  CONTROL  [initandlisten]     target_arch: x86_64
+2024-07-15T18:20:59.623+0200 I  CONTROL  [initandlisten] options: { storage: { dbPath: "/data/db" } }
+2024-07-15T18:20:59.623+0200 E  STORAGE  [initandlisten] Failed to set up listener: SocketException: Address already in use
+2024-07-15T18:20:59.623+0200 I  REPL     [initandlisten] Stepping down the ReplicationCoordinator for shutdown, waitTime: 10000ms
+2024-07-15T18:20:59.623+0200 I  SHARDING [initandlisten] Shutting down the WaitForMajorityService
+2024-07-15T18:20:59.623+0200 I  NETWORK  [initandlisten] Shutting down the global connection pool
+2024-07-15T18:20:59.623+0200 I  INDEX    [initandlisten] Shutting down the IndexBuildsCoordinator
+2024-07-15T18:20:59.623+0200 I  NETWORK  [initandlisten] Shutting down the ReplicaSetMonitor
+2024-07-15T18:20:59.623+0200 I  CONTROL  [initandlisten] Shutting down free monitoring
+2024-07-15T18:20:59.623+0200 I  FTDC     [initandlisten] Shutting down full-time data capture
+2024-07-15T18:20:59.623+0200 I  STORAGE  [initandlisten] Shutting down the HealthLog
+2024-07-15T18:20:59.623+0200 I  -        [initandlisten] Dropping the scope cache for shutdown
+2024-07-15T18:20:59.624+0200 I  CONTROL  [initandlisten] now exiting
+2024-07-15T18:20:59.624+0200 I  CONTROL  [initandlisten] shutting down with code:48
