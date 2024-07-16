@@ -1,32 +1,19 @@
 #!/usr/bin/env python3
 """
-Module for finding a document in a MongoDB collection.
+Module for inserting a school document into a MongoDB collection
 """
 
 from pymongo import MongoClient
 
-
-def find_document(database_name, collection_name, query):
+def insert_school(mongo_collection, **kwargs):
     """
-    Finds a document in a MongoDB collection.
+    Inserts a new document in a collection based on kwargs
 
     Args:
-        database_name (str): The name of the database.
-        collection_name (str): The name of the collection.
-        query (dict): The query to find the document.
+    mongo_collection (pymongo.collection.Collection): pymongo collection object
+    kwargs: key-value pairs for the document to be inserted
 
     Returns:
-        dict: The found document.
+    pymongo.results.InsertOneResult: the inserted document's id
     """
-    client = MongoClient()
-    db = client[database_name]
-    collection = db[collection_name]
-    document = collection.find_one(query)
-    client.close()
-    return document
-
-
-if __name__ == "__main__":
-    query = {"name": "John Doe"}
-    document = find_document("my_database", "users", query)
-    print(f"Found document: {document}")
+    return mongo_collection.insert_one(kwargs).inserted_id
