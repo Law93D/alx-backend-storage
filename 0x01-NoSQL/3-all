@@ -1,0 +1,19 @@
+//  a script that lists all documents in the collection school
+
+from pymongo import MongoClient
+
+# Connect to MongoDB server
+client = MongoClient('mongodb://localhost:27017/')
+
+# Access the specified database and collection
+db = client['my_database']
+collection = db['my_collection']
+
+# Update the 'topics' field for the document with 'name' field value 'John Doe'
+result = collection.update_one(
+    {"name": "John Doe"},
+    {"$set": {"topics": ["Math", "Science"]}}
+)
+
+print("Matched documents:", result.matched_count)
+print("Modified documents:", result.modified_count)
