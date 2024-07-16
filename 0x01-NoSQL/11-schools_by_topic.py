@@ -1,32 +1,29 @@
 #!/usr/bin/env python3
 """
-Module for deleting a document from a MongoDB collection.
+Module for log stats
 """
 
 from pymongo import MongoClient
 
-
-def delete_document(database_name, collection_name, query):
+def log_stats():
     """
-    Deletes a document from a MongoDB collection.
-
-    Args:
-        database_name (str): The name of the database.
-        collection_name (str): The name of the collection.
-        query (dict): The query to find the document.
-
-    Returns:
-        int: The number of documents deleted.
+    Provides statistics about Nginx logs stored in MongoDB
     """
-    client = MongoClient()
-    db = client[database_name]
-    collection = db[collection_name]
-    result = collection.delete_one(query)
-    client.close()
-    return result.deleted_count
+    client = MongoClient('mongodb://127.0.0.1:27017')
+    db = client.logs
+    collection = db.nginx
 
+    total_logs = collection.count_documents({})
+    print(f"{total_logs} logs")
+
+    print("Methods:")
+    methods = ["GET", "POST", "PUT", "PATCH", "DELETE"]
+    for method in methods:
+        count = collection.count_documents({"method": method})
+        print(f"\tmethod {method}: {count}")
+
+    status_check = collection.count_documents({"method": "GET", "path": "/status"})
+    print(f"{status_check} status check")
 
 if __name__ == "__main__":
-    query = {"name": "John Doe"}
-    deleted_count = delete_document("my_database", "users", query)
-    print(f"Deleted {deleted_count} document(s)")
+    log_stats()
