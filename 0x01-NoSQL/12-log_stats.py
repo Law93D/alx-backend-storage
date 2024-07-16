@@ -1,30 +1,29 @@
 #!/usr/bin/env python3
 """
-Module for listing all documents in a MongoDB collection.
+Module for finding top students in a MongoDB collection
 """
 
 from pymongo import MongoClient
 
-
-def list_all_documents(database_name, collection_name):
+def top_students(mongo_collection):
     """
-    Lists all documents in a MongoDB collection.
+    Returns all students sorted by average score
 
     Args:
-        database_name (str): The name of the database.
-        collection_name (str): The name of the collection.
+    mongo_collection (pymongo.collection.Collection): pymongo collection object
 
     Returns:
-        list: A list of all documents in the collection.
+    list: list of students sorted by average score
     """
-    client = MongoClient()
-    db = client[database_name]
-    collection = db[collection_name]
-    documents = list(collection.find())
-    client.close()
-    return documents
-
-
-if __name__ == "__main__":
-    documents = list_all_documents("my_database", "users")
-    print(f"All documents: {documents}")
+    pipeline = [
+        {
+            "$project": {
+                "name": 1,
+                "averageScore": {"$avg": "$topics.score"}
+            }
+        },
+        {
+            "$sort": {"averageScore": -1}
+        }
+    ]
+    return list(mongo_collection.aggregate(pipeline))
