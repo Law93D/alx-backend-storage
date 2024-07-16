@@ -1,28 +1,51 @@
 #!/usr/bin/env python3
-""" 101-main """
+"""
+Module for log stats with additional top IPs feature
+"""
+
 from pymongo import MongoClient
-list_all = __import__('8-all').list_all
-insert_school = __import__('9-insert_school').insert_school
-top_students = __import__('101-students').top_students
+
+def log_stats():
+    """
+    Provides statistics about Nginx logs stored in MongoDB
+    and prints the top 10 most present IPs.
+    """
+    client = MongoClient('mongodb://127.0.0.1:27017')
+    db = client.logs
+    collection = db.nginx
+
+    total_logs = collection.count_documents({})
+    print(f"{total_logs} logs")
+
+    print("Methods:")
+    methods = ["GET", "POST", "PUT", "PATCH", "DELETE"]
+    for method in methods:
+        count = collection.count_documents({"method": method})
+        print(f"\tmethod {method}: {count}")
+
+    status_check = collection.count_documents({"method": "GET", "path": "/status"})
+    print(f"{status_check} status check")
+
+    # Top 10 most present IPs
+    pipeline = [
+        {
+            "$group": {
+                "_id": "$ip",
+                "count": { "$sum": 1 }
+            }
+        },
+        {
+            "$sort": { "count": -1 }
+        },
+        {
+            "$limit": 10
+        }
+    ]
+    top_ips = list(collection.aggregate(pipeline))
+
+    print("IPs:")
+    for ip in top_ips:
+        print(f"\t{ip['_id']}: {ip['count']}")
 
 if __name__ == "__main__":
-    client = MongoClient('mongodb://127.0.0.1:27017')
-    students_collection = client.my_db.students
-
-    j_students = [
-        { 'name': "John", 'topics': [{ 'title': "Algo", 'score': 10.3 },{ 'title': "C", 'score': 6.2 }, { 'title': "Python", 'score': 12.1 }]},
-        { 'name': "Bob", 'topics': [{ 'title': "Algo", 'score': 5.4 },{ 'title': "C", 'score': 4.9 }, { 'title': "Python", 'score': 7.9 }]},
-        { 'name': "Sonia", 'topics': [{ 'title': "Algo", 'score': 14.8 },{ 'title': "C", 'score': 8.8 }, { 'title': "Python", 'score': 15.7 }]},
-        { 'name': "Amy", 'topics': [{ 'title': "Algo", 'score': 9.1 },{ 'title': "C", 'score': 14.2 }, { 'title': "Python", 'score': 4.8 }]},
-        { 'name': "Julia", 'topics': [{ 'title': "Algo", 'score': 10.5 },{ 'title': "C", 'score': 10.2 }, { 'title': "Python", 'score': 10.1 }]}
-    ]
-    for j_student in j_students:
-        insert_school(students_collection, **j_student)
-
-    students = list_all(students_collection)
-    for student in students:
-        print("[{}] {} - {}".format(student.get('_id'), student.get('name'), student.get('topics')))
-
-    top_students_list = top_students(students_collection)
-    for student in top_students_list:
-        print("[{}] {} => {}".format(student.get('_id'), student.get('name'), student.get('averageScore')))
+    log_stats()
