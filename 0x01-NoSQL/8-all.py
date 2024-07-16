@@ -1,32 +1,30 @@
 #!/usr/bin/env python3
 """
-Module for inserting a document into a MongoDB collection.
+Module for listing all documents in a MongoDB collection.
 """
 
 from pymongo import MongoClient
 
 
-def insert_document(database_name, collection_name, document):
+def list_all(database_name, collection_name):
     """
-    Inserts a document into a MongoDB collection.
+    Lists all documents in a MongoDB collection.
 
     Args:
         database_name (str): The name of the database.
         collection_name (str): The name of the collection.
-        document (dict): The document to be inserted.
 
     Returns:
-        str: The inserted document's _id.
+        list: A list of all documents in the collection.
     """
     client = MongoClient()
     db = client[database_name]
     collection = db[collection_name]
-    result = collection.insert_one(document)
+    documents = list(collection.find())
     client.close()
-    return str(result.inserted_id)
+    return documents
 
 
 if __name__ == "__main__":
-    doc = {"name": "John Doe", "age": 30, "occupation": "Software Engineer"}
-    inserted_id = insert_document("my_database", "users", doc)
-    print(f"Inserted document ID: {inserted_id}")
+    documents = list_all("my_database", "users")
+    print(f"All documents: {documents}")
