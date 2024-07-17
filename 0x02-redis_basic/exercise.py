@@ -29,6 +29,19 @@ def call_history(method: Callable) -> Callable:
         return output
     return wrapper
 
+def replay(method: Callable):
+    """Displays the history of calls of a particular function"""
+    cache = method.__self__
+    input_key = f"{method.__qualname__}:inputs"
+    output_key = f"{method.__qualname__}:outputs"
+
+    inputs = cache._redis.lrange(input_key, 0, -1)
+    outputs = cache._redis.lrange(output_key, 0, -1)
+
+    print(f"{method.__qualname__} was called {len(inputs)} times:")
+    for inp, out in zip(inputs, outputs):
+        print(f"{method.__qualname__}(*{inp.decode('utf-8')}) -> {out.decode('utf-8')}")
+
 class Cache:
     def __init__(self):
         """Initialize Redis client and flush the database"""
@@ -78,6 +91,8 @@ if __name__ == "__main__":
     s3 = cache.store("third")
     print(s3)
 
+    replay(cache.store)
+
     inputs = cache._redis.lrange(f"{cache.store.__qualname__}:inputs", 0, -1)
     outputs = cache._redis.lrange(f"{cache.store.__qualname__}:outputs", 0, -1)
 
@@ -94,3 +109,6 @@ if __name__ == "__main__":
     for value, fn in TEST_CASES.items():
         key = cache.store(value)
         assert cache.get(key, fn=fn) == value
+
+    # Print call history for store method
+        replay(cache.store)
