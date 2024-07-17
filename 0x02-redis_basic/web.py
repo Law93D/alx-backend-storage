@@ -1,28 +1,42 @@
 #!/usr/bin/env python3
 import redis
 import requests
+import functools
 
 # Initialize Redis client
 redis_client = redis.Redis()
 
-def get_page(url: str) -> str:
-    """Retrieve HTML content of a URL and cache it with Redis"""
-    # Track the number of accesses for the URL
-    url_count_key = f"count:{url}"
-    redis_client.incr(url_count_key)
+def track_access_count(method):
+    """Decorator to track the number of accesses for a URL"""
+    @functools.wraps(method)
+    def wrapper(url):
+        """Wrapper function to increment access count and call the original method"""
+        url_count_key = f"count:{url}"
+        redis_client.incr(url_count_key)
+        return method(url)
+    return wrapper
 
-    # Check if the URL content is cached in Redis
-    cached_html = redis_client.get(url)
-    if cached_html:
-        return cached_html.decode('utf-8')
+def cache_with_expiry(method):
+    """Decorator to cache the result with expiration time of 10 seconds"""
+    @functools.wraps(method)
+    def wrapper(url):
+        """Wrapper function to fetch or cache the HTML content"""
+        cached_html = redis_client.get(url)
+        if cached_html:
+            return cached_html.decode('utf-8')
 
-    # If not cached, fetch HTML from the URL
-    response = requests.get(url)
-    if response.status_code == 200:
-        html_content = response.text
-        # Cache HTML content in Redis with expiration of 10 seconds
+        html_content = method(url)
         redis_client.setex(url, 10, html_content)
         return html_content
+    return wrapper
+
+@track_access_count
+@cache_with_expiry
+def get_page(url: str) -> str:
+    """Retrieve HTML content of a URL using requests"""
+    response = requests.get(url)
+    if response.status_code == 200:
+        return response.text
     else:
         return f"Error: Unable to fetch URL {url}, Status code: {response.status_code}"
 
